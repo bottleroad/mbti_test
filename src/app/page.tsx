@@ -233,19 +233,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
-                icon: "🎯",
+                icon: "🔬",
                 title: "정확한 분석",
                 description: "심리학 연구를 바탕으로 한 검증된 질문으로 정확한 성격 유형을 파악합니다.",
                 color: "from-blue-50 to-indigo-50"
               },
               {
-                icon: "📊",
+                icon: "📋",
                 title: "상세한 리포트",
                 description: "강점, 약점, 추천 직업까지 포함한 종합적인 성격 분석 리포트를 제공합니다.",
                 color: "from-purple-50 to-pink-50"
               },
               {
-                icon: "⚡",
+                icon: "🚀",
                 title: "빠른 결과",
                 description: "단 5분만에 완료하고 즉시 결과를 확인할 수 있는 효율적인 테스트입니다.",
                 color: "from-green-50 to-emerald-50"
@@ -283,7 +283,7 @@ export default function Home() {
       </section>
 
       {/* Age Selection Section */}
-      <section id="age-selection" className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <section id="age-selection" className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -292,10 +292,10 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
               연령대를 선택해주세요
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               각 연령대에 맞는 맞춤형 질문으로 더 정확한 성격 분석을 제공합니다.
             </p>
           </motion.div>
@@ -307,7 +307,7 @@ export default function Home() {
                 title: '10대',
                 description: '학교생활과 친구관계 중심의 질문',
                 icon: '🎓',
-                color: 'from-pink-500 to-rose-500'
+                color: 'from-blue-500 to-cyan-500'
               },
               {
                 age: 'young_adult',
@@ -321,14 +321,14 @@ export default function Home() {
                 title: '4~50대',
                 description: '가족과 책임감 중심의 질문',
                 icon: '👨‍👩‍👧‍👦',
-                color: 'from-green-500 to-emerald-500'
+                color: 'from-indigo-500 to-purple-500'
               },
               {
                 age: 'senior',
                 title: '60대 이상',
                 description: '여가활동과 인생경험 중심의 질문',
                 icon: '🌅',
-                color: 'from-orange-500 to-amber-500'
+                color: 'from-violet-500 to-purple-500'
               }
             ].map((ageGroup, index) => (
               <motion.div
