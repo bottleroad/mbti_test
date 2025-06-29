@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from '@/components/AuthProvider'
+import { AuthDialog } from '@/components/AuthDialog'
 
 interface Question {
   id: number
@@ -38,6 +40,7 @@ interface MBTITestProps {
 }
 
 export default function MBTITest({ ageGroup = 'general' }: MBTITestProps) {
+  const { user, loading: authLoading } = useAuth()
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Answer[]>([])
@@ -46,11 +49,7 @@ export default function MBTITest({ ageGroup = 'general' }: MBTITestProps) {
   const [result, setResult] = useState<string>('')
   const [scores, setScores] = useState<MBTIScores | null>(null)
 
-  useEffect(() => {
-    fetchQuestions()
-  }, [ageGroup])
-
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('mbti_questions')
@@ -65,7 +64,11 @@ export default function MBTITest({ ageGroup = 'general' }: MBTITestProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [ageGroup])
+
+  useEffect(() => {
+    fetchQuestions()
+  }, [fetchQuestions])
 
   const handleAnswer = (score: number) => {
     const question = questions[currentQuestion]
@@ -136,10 +139,13 @@ export default function MBTITest({ ageGroup = 'general' }: MBTITestProps) {
   }
 
   const saveResult = async (personality: string, scores: MBTIScores, allAnswers: Answer[]) => {
+    if (!user) return
+    
     try {
       await supabase
         .from('mbti_results')
         .insert({
+          user_id: user.id,
           personality_type: personality,
           scores,
           answers: allAnswers
@@ -155,6 +161,39 @@ export default function MBTITest({ ageGroup = 'general' }: MBTITestProps) {
     setTestComplete(false)
     setResult('')
     setScores(null)
+  }
+
+  // 인증 로딩 중
+  if (authLoading) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-6"></div>
+          <p className="text-slate-600 text-lg">로딩 중...</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // 로그인하지 않은 사용자
+  if (!user) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="text-6xl mb-6">🔒</div>
+          <h3 className="text-2xl font-bold text-slate-900 mb-4">로그인이 필요합니다</h3>
+          <p className="text-slate-600 mb-8 leading-relaxed">
+            MBTI 테스트를 진행하려면 먼저 로그인해주세요.<br />
+            결과를 저장하고 언제든지 다시 확인할 수 있습니다.
+          </p>
+          <AuthDialog>
+            <Button size="lg">
+              로그인
+            </Button>
+          </AuthDialog>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (loading) {

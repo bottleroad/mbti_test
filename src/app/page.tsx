@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
+import { AuthDialog } from "@/components/AuthDialog";
+import { UserMenu } from "@/components/UserMenu";
 
 const personalityTypes = [
   { type: 'INTJ', title: '건축가', emoji: '🏗️', color: 'from-purple-500 to-violet-600', description: '상상력이 풍부하면서도 결단력이 있는 전략가' },
@@ -26,8 +29,53 @@ const personalityTypes = [
 ];
 
 export default function Home() {
+  const { user, loading } = useAuth();
+
+  const handleStartTest = () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    document.getElementById('age-selection')?.scrollIntoView({ 
+      behavior: 'smooth' 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="relative z-10 bg-white/80 backdrop-blur-sm border-b border-slate-200">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                MBTI Test
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {loading ? (
+                <div className="w-8 h-8 rounded-full bg-slate-200 animate-pulse"></div>
+              ) : user ? (
+                <UserMenu user={user} />
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <AuthDialog>
+                    <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                      로그인
+                    </Button>
+                  </AuthDialog>
+                  <AuthDialog defaultMode="signup">
+                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                      회원가입
+                    </Button>
+                  </AuthDialog>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background Pattern */}
@@ -105,17 +153,29 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0, duration: 0.8 }}
               >
-                <Button 
-                  onClick={() => {
-                    document.getElementById('age-selection')?.scrollIntoView({ 
-                      behavior: 'smooth' 
-                    });
-                  }}
-                  size="lg" 
-                  className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                >
-                  테스트 시작하기
-                </Button>
+                {user ? (
+                  <Button 
+                    onClick={handleStartTest}
+                    size="lg" 
+                    className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    테스트 시작하기
+                  </Button>
+                ) : (
+                  <div className="flex flex-col items-center space-y-4">
+                    <p className="text-slate-600 text-center">
+                      테스트를 시작하려면 로그인이 필요합니다
+                    </p>
+                    <AuthDialog>
+                      <Button 
+                        size="lg" 
+                        className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      >
+                        로그인하고 시작하기
+                      </Button>
+                    </AuthDialog>
+                  </div>
+                )}
               </motion.div>
             </motion.div>
             
